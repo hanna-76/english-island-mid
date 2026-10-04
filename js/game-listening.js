@@ -113,7 +113,7 @@ const GameListening = {
     // 合并正确答案和干扰项，打乱顺序
     const options = shuffle([q, ...distractors]);
 
-    // 渲染每个图片选项卡片
+    // 渲染每个图片选项卡片（只显示emoji，不显示中文，让孩子听音辨图）
     const box = document.getElementById("imgOptions");
     box.innerHTML = "";
     options.forEach(opt => {

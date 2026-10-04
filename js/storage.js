@@ -166,6 +166,7 @@ const Store = {
   getAccuracy() {
     const data = this.load();
     if (data.totalAnswered === 0) return 0;
-    return Math.round((data.totalCorrect / data.totalAnswered) * 100);
+    // 限制正确率在 0~100 之间（旧数据可能因bug导致超过100%）
+    return Math.min(100, Math.round((data.totalCorrect / data.totalAnswered) * 100));
   }
 };

@@ -81,7 +81,7 @@ const GameSpell = {
     const stage = document.getElementById("stage");
     stage.innerHTML = `
       <div class="spell-box">
-        <div class="spell-emoji">${q.emoji}</div>
+        <div class="spell-emoji">${renderWordImage(q)}</div>
         <p class="q-cn">拼出这个单词：${q.zh}</p>
         <button class="btn-replay" id="btnReplay">🔊 听发音</button>
         <div class="spell-slots" id="slots"></div>

@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
  * game-match.js —— 词图配对游戏模块
  *
  * 适用年龄：6~8 岁
@@ -26,6 +26,8 @@ const GameMatch = {
   onFinish: null,   // 结束回调 (correct, total)
   pickedImg: null,  // 当前选中的图片卡片 { btn, word }，未选中时为 null
   pickedWord: null, // 当前选中的单词卡片 { btn, word }，未选中时为 null
+  totalRounds: 5,   // 总组数（固定5组）
+  matchedInRound: 0, // 当前组已配对成功的数量（用于进度条显示）
 
   /* ----------------------------------------------------------
    * start(theme, onFinish)
@@ -47,6 +49,7 @@ const GameMatch = {
     this.onFinish = onFinish;
     this.index = 0;
     this.correct = 0;
+    this.matchedInRound = 0;
     // 抽取 5 个单词作为当前组的配对内容
     this.questions = sample(theme.words, Math.min(5, theme.words.length));
     this.renderRound();
@@ -74,8 +77,10 @@ const GameMatch = {
     this.pickedImg = null;
     this.pickedWord = null;
 
-    // 更新进度条（当前组号 / 总组数）
-    App.showProgress(this.index + 1, this.questions.length);
+    // 更新进度条（总进度 = 之前组的配对数 + 当前组已配对数 / 总配对数）
+    const totalPairs = this.totalRounds * this.questions.length;
+    const donePairs = this.index * this.questions.length + this.matchedInRound;
+    App.showProgress(donePairs, totalPairs);
 
     // 渲染界面骨架
     const stage = document.getElementById("stage");
@@ -95,7 +100,7 @@ const GameMatch = {
       const imgBtn = document.createElement("button");
       imgBtn.className = "match-img";
       imgBtn.dataset.en = w.en;
-      imgBtn.innerHTML = `<span class="emoji">${w.emoji}</span>`;
+      imgBtn.innerHTML = renderWordImage(w, "small");
       imgBtn.onclick = () => this.pickImg(imgBtn, w);
       imgCol.appendChild(imgBtn);
     });
@@ -177,6 +182,7 @@ const GameMatch = {
     if (this.pickedImg.word.en === this.pickedWord.word.en) {
       // ===== 配对成功 =====
       this.correct++;
+      this.matchedInRound++;
       this.pickedImg.btn.classList.add("matched");
       this.pickedWord.btn.classList.add("matched");
       AudioManager.speak(this.pickedImg.word.en + " !");
@@ -187,15 +193,21 @@ const GameMatch = {
       this.pickedImg = null;
       this.pickedWord = null;
 
+      // 更新进度条
+      const totalPairs = this.totalRounds * this.questions.length;
+      const donePairs = this.index * this.questions.length + this.matchedInRound;
+      App.showProgress(donePairs, totalPairs);
+
       // 检查这一组是否全部配对完成
       const remaining = document.querySelectorAll(".match-img:not(.matched)");
       if (remaining.length === 0) {
         // 全部配对完，0.8 秒后进入下一组或结算
         setTimeout(() => {
           this.index++;
-          if (this.index >= this.questions.length) {
-            // 全部组做完，触发结束回调
-            if (this.onFinish) this.onFinish(this.correct, this.questions.length);
+          this.matchedInRound = 0;
+          if (this.index >= this.totalRounds) {
+            // 全部组做完，触发结束回调（总题数 = 组数 × 每组对数）
+            if (this.onFinish) this.onFinish(this.correct, this.totalRounds * this.questions.length);
           } else {
             // 还有下一组，重新抽取 5 个词并渲染
             this.questions = sample(this.theme.words, Math.min(5, this.theme.words.length));

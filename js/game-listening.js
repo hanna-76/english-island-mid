@@ -113,13 +113,13 @@ const GameListening = {
     // 合并正确答案和干扰项，打乱顺序
     const options = shuffle([q, ...distractors]);
 
-    // 渲染每个图片选项卡片（只显示emoji，不显示中文，让孩子听音辨图）
+    // 渲染每个图片选项卡片（颜色主题显示颜色块，其他显示emoji）
     const box = document.getElementById("imgOptions");
     box.innerHTML = "";
     options.forEach(opt => {
       const btn = document.createElement("button");
       btn.className = "img-card";
-      btn.innerHTML = `<span class="emoji">${opt.emoji}</span>`;
+      btn.innerHTML = renderWordImage(opt);
       btn.onclick = () => this.handlePick(btn, opt, q);
       box.appendChild(btn);
     });

@@ -105,15 +105,21 @@ const App = {
     this.showScreen("screenTheme");
     const wrap = document.getElementById("themeGrid");
     wrap.innerHTML = "";
-    const unlocked = Store.load().unlockedThemes || [THEMES[0].id];
+    const data = Store.load();
+    const unlocked = data.unlockedThemes || [THEMES[0].id];
+    const bestScore = data.bestScore || {};
+    // 当前玩法的中文名，用于显示
+    const taskName = { listening: "听音", match: "配对", spell: "拼词" }[this.taskType] || "";
     THEMES.forEach(t => {
       const locked = !unlocked.includes(t.id);
+      const key = t.id + "_" + this.taskType;
+      const best = bestScore[key] || 0;
       const btn = document.createElement("button");
       btn.className = "theme-card" + (locked ? " locked" : "");
       btn.innerHTML = `
         <span class="emoji">${t.icon}</span>
         <span>${t.name}</span>
-        ${locked ? "<small>🔒 通关解锁</small>" : `<small>${t.words.length} 词</small>`}
+        ${locked ? "<small>🔒 通关解锁</small>" : `<small>${t.words.length}词 · ${taskName}最高${best}分</small>`}
       `;
       if (!locked) btn.onclick = () => this.startGame(t);
       wrap.appendChild(btn);
@@ -184,7 +190,7 @@ const App = {
     document.getElementById("resultText").innerHTML = `
       <div class="stars">${starStr}</div>
       <p class="result-score">${correct} / ${total} 正确</p>
-      <p class="result-acc">正确率 ${acc}% · 历史正确率 ${Store.getAccuracy}%</p>
+      <p class="result-acc">正确率 ${acc}% · 历史正确率 ${Store.getAccuracy()}%</p>
     `;
 
     // 错题复习入口：如果错题本非空，显示复习按钮

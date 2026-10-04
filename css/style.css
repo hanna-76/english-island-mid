@@ -1,0 +1,635 @@
+/* ============================================================
+ * style.css —— 全站样式表（移动端竖屏优先设计）
+ *
+ * 设计原则：
+ *   1. 大按钮：所有可点击区域不小于 44×44 CSS 像素（符合触控规范）
+ *   2. 柔和配色：使用粉蓝渐变背景，圆角卡片，儿童友好
+ *   3. 竖屏适配：最大宽度 480px，居中显示，无横向滚动
+ *   4. 高对比度：正确绿色、错误红色，反馈清晰
+ *   5. 动画反馈：答错抖动、答对高亮，增强交互感
+ *
+ * 样式组织顺序：
+ *   1. 全局重置与基础样式
+ *   2. 屏幕切换
+ *   3. 顶部栏
+ *   4. 标题与首页
+ *   5. 通用按钮
+ *   6. 主题/年龄/任务卡片
+ *   7. 游戏区（进度条、题目提示）
+ *   8. 听音找图：图片选项
+ *   9. 词图配对：配对面板
+ *   10. 拼单词：空格槽与字母按钮
+ *   11. 句子排序：单词卡片
+ *   12. 结算页
+ *   13. 页脚
+ * ============================================================ */
+
+/* ----------------------------------------------------------
+ * 全局重置：清除所有元素的默认外边距和内边距
+ * box-sizing: border-box 让宽度包含边框和内边距，布局更直观
+ * -webkit-tap-highlight-color: transparent 去掉移动端点击高亮
+ * ---------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ----------------------------------------------------------
+ * html 和 body：占满整个视口高度
+ * 字体优先使用系统默认中文字体（苹果/微软雅黑）
+ * 背景使用粉蓝线性渐变，柔和不刺眼
+ * overflow: hidden 防止页面整体滚动（内部屏幕自己滚动）
+ * touch-action: manipulation 禁止双击缩放，响应更快
+ * ---------------------------------------------------------- */
+html, body {
+  height: 100%;
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(160deg, #a8edea 0%, #fed6e3 100%);
+  color: #333;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+/* ----------------------------------------------------------
+ * #app：应用主容器
+ * 最大宽度 480px（手机竖屏常见宽度），水平居中
+ * 高度 100% 占满视口，position: relative 供内部绝对定位元素参考
+ * ---------------------------------------------------------- */
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100%;
+  position: relative;
+}
+
+/* ----------------------------------------------------------
+ * .screen：屏幕（页面）容器
+ * 默认 display: none 隐藏，加 .active 类后显示为 flex
+ * 高度 100% 占满，内边距上下 20px 左右 16px，底部留 80px 给页脚
+ * overflow-y: auto 内容超出时可纵向滚动
+ * flex-direction: column 子元素垂直排列
+ * ---------------------------------------------------------- */
+.screen {
+  display: none;
+  height: 100%;
+  padding: 20px 16px 80px;
+  overflow-y: auto;
+  flex-direction: column;
+}
+.screen.active { display: flex; }
+
+/* ----------------------------------------------------------
+ * .topbar：顶部栏
+ * display: flex 横向排列，两端对齐（返回按钮左、静音按钮右）
+ * 垂直居中，底部留 16px 间距
+ * ---------------------------------------------------------- */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0 16px;
+}
+
+/* ----------------------------------------------------------
+ * #btnMute, #btnExit：静音和退出按钮
+ * 48×48 圆形按钮，半透明白底，22px 大图标
+ * 无外边框，cursor: pointer 鼠标悬停显示手型
+ * ---------------------------------------------------------- */
+#btnMute, #btnExit {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.8);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------
+ * .hero：首页标题区
+ * 文字居中，上下外边距 20px
+ * ---------------------------------------------------------- */
+.hero {
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* ----------------------------------------------------------
+ * .hero h1：主标题
+ * 28px 大字号，粉红色，白色文字阴影营造立体感
+ * ---------------------------------------------------------- */
+.hero h1 {
+  font-size: 28px;
+  color: #ff6b9d;
+  text-shadow: 2px 2px 0 #fff;
+}
+
+/* ----------------------------------------------------------
+ * .hero p：副标题
+ * 灰色，顶部留 8px 间距
+ * ---------------------------------------------------------- */
+.hero p {
+  color: #666;
+  margin-top: 8px;
+}
+
+/* ----------------------------------------------------------
+ * #homeLevelInfo：首页档次说明标签
+ * 半透明白底，圆角胶囊形，13px 小字号，顶部留 12px
+ * display: inline-block 让宽度自适应内容
+ * ---------------------------------------------------------- */
+#homeLevelInfo {
+  background: rgba(255,255,255,0.7);
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  margin-top: 12px;
+  display: inline-block;
+}
+
+/* ----------------------------------------------------------
+ * .btn-primary：主按钮（开始游戏、再玩一次等）
+ * 宽度 100% 撑满，上下内边距 16px，圆角 30px 胶囊形
+ * 粉红渐变背景，18px 粗体白字
+ * box-shadow 粉色阴影营造悬浮感
+ * :active 点击时缩小到 98%，模拟按压反馈
+ * ---------------------------------------------------------- */
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(255,107,157,0.3);
+}
+.btn-primary:active { transform: scale(0.98); }
+
+/* ----------------------------------------------------------
+ * .btn-secondary：次要按钮（回首页等）
+ * 蓝白渐变背景，与主按钮的粉色区分
+ * ---------------------------------------------------------- */
+.btn-secondary {
+  background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+}
+
+/* ----------------------------------------------------------
+ * #themeGrid, .age-grid, .task-grid：卡片网格容器
+ * display: grid 两列布局，列间距 12px，顶部留 16px
+ * ---------------------------------------------------------- */
+#themeGrid, .age-grid, .task-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* ----------------------------------------------------------
+ * .theme-card, .age-card, .task-card：卡片按钮
+ * 白底圆角 16px，内边距 20px 12px，文字居中
+ * 无外边框，16px 字号，cursor 手型
+ * box-shadow 轻微阴影
+ * display: flex 纵向排列，图标在上文字在下
+ * min-height: 80px 保证卡片高度一致
+ * ---------------------------------------------------------- */
+.theme-card, .age-card, .task-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 12px;
+  text-align: center;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 80px;
+}
+
+/* ----------------------------------------------------------
+ * 卡片内的 emoji 图标：36px 大字号
+ * ---------------------------------------------------------- */
+.theme-card .emoji, .age-card .emoji, .task-card .emoji {
+  font-size: 36px;
+}
+
+/* ----------------------------------------------------------
+ * .theme-card.locked：未解锁的主题卡片
+ * opacity: 0.5 半透明，表示不可用
+ * ---------------------------------------------------------- */
+.theme-card.locked { opacity: 0.5; }
+
+/* ----------------------------------------------------------
+ * 卡片内的 small 小字：灰色 12px，用于显示词数或锁定提示
+ * ---------------------------------------------------------- */
+.theme-card small, .age-card small, .task-card small {
+  color: #999;
+  font-size: 12px;
+}
+
+/* ----------------------------------------------------------
+ * #progressWrap：进度条外框
+ * 高度 8px，半透明白底，圆角 4px，overflow 隐藏
+ * 底部留 16px 间距
+ * ---------------------------------------------------------- */
+#progressWrap {
+  height: 8px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+/* ----------------------------------------------------------
+ * #progressBar：进度条填充
+ * 高度 100%，粉橙渐变，宽度由 JS 动态设置
+ * transition: width 0.3s 宽度变化时有平滑动画
+ * ---------------------------------------------------------- */
+#progressBar {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b9d, #ffa751);
+  width: 0;
+  transition: width 0.3s;
+}
+
+/* ----------------------------------------------------------
+ * .q-hint：题目提示区（听音找图）
+ * 文字居中，底部留 16px
+ * ---------------------------------------------------------- */
+.q-hint {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+/* ----------------------------------------------------------
+ * .q-cn：中文提示文字
+ * 20px 粗体，深灰色，底部留 8px
+ * ---------------------------------------------------------- */
+.q-cn {
+  font-size: 20px;
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+/* ----------------------------------------------------------
+ * .btn-replay：重播发音按钮
+ * 白底粉边，粉色文字，圆角 20px 胶囊形
+ * 15px 字号，内边距 10px 20px
+ * ---------------------------------------------------------- */
+.btn-replay {
+  background: #fff;
+  border: 2px solid #ff9a9e;
+  color: #ff6b9d;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------
+ * .img-options：听音找图的图片选项网格
+ * 两列布局，列间距 14px，顶部留 16px
+ * ---------------------------------------------------------- */
+.img-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+/* ----------------------------------------------------------
+ * .img-card：图片选项卡片
+ * aspect-ratio: 1 正方形，白底圆角 20px
+ * 默认 4px 透明边框（答对/答错时变色）
+ * 72px 大 emoji，flex 居中
+ * transition: all 0.2s 所有属性变化有动画
+ * ---------------------------------------------------------- */
+.img-card {
+  aspect-ratio: 1;
+  background: #fff;
+  border-radius: 20px;
+  border: 4px solid transparent;
+  font-size: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* ----------------------------------------------------------
+ * .img-card.right：答对状态
+ * 绿色边框 + 浅绿背景
+ * ---------------------------------------------------------- */
+.img-card.right {
+  border-color: #4caf50;
+  background: #e8f5e9;
+}
+
+/* ----------------------------------------------------------
+ * .img-card.wrong：答错状态
+ * 红色边框 + 浅红背景 + 左右抖动动画
+ * ---------------------------------------------------------- */
+.img-card.wrong {
+  border-color: #f44336;
+  background: #ffebee;
+  animation: shake 0.3s;
+}
+
+/* ----------------------------------------------------------
+ * @keyframes shake：抖动动画关键帧
+ * 0% 和 100% 在原位，25% 左移 5px，75% 右移 5px
+ * ---------------------------------------------------------- */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* ----------------------------------------------------------
+ * .match-board：词图配对面板
+ * 两列网格布局，列间距 20px，顶部留 16px
+ * ---------------------------------------------------------- */
+.match-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 16px;
+}
+
+/* ----------------------------------------------------------
+ * .match-col：配对列（图片列或单词列）
+ * flex 纵向排列，子元素间距 10px
+ * ---------------------------------------------------------- */
+.match-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ----------------------------------------------------------
+ * .match-img, .match-word：配对卡片
+ * 最小高度 56px，内边距 10px，无外边框
+ * 白底圆角 12px，18px 字号，cursor 手型
+ * ---------------------------------------------------------- */
+.match-img, .match-word {
+  min-height: 56px;
+  padding: 10px;
+  border: none;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------
+ * .match-img 内的 emoji：36px
+ * ---------------------------------------------------------- */
+.match-img .emoji { font-size: 36px; }
+
+/* ----------------------------------------------------------
+ * .match-img.selected, .match-word.selected：选中状态
+ * 3px 粉色外轮廓高亮
+ * ---------------------------------------------------------- */
+.match-img.selected, .match-word.selected {
+  outline: 3px solid #ff9a9e;
+}
+
+/* ----------------------------------------------------------
+ * .match-img.matched, .match-word.matched：已配对状态
+ * 浅绿背景 + 0.6 半透明，表示已完成不可再点
+ * ---------------------------------------------------------- */
+.match-img.matched, .match-word.matched {
+  background: #c8e6c9;
+  opacity: 0.6;
+}
+
+/* ----------------------------------------------------------
+ * .match-img.wrong, .match-word.wrong：配对失败状态
+ * 浅红背景
+ * ---------------------------------------------------------- */
+.match-img.wrong, .match-word.wrong {
+  background: #ffcdd2;
+}
+
+/* ----------------------------------------------------------
+ * .spell-box：拼词游戏容器
+ * 文字居中
+ * ---------------------------------------------------------- */
+.spell-box { text-align: center; }
+
+/* ----------------------------------------------------------
+ * .spell-emoji：拼词题的大 emoji
+ * 80px 大字号，上下外边距 10px
+ * ---------------------------------------------------------- */
+.spell-emoji {
+  font-size: 80px;
+  margin: 10px 0;
+}
+
+/* ----------------------------------------------------------
+ * .spell-slots：空格槽容器
+ * flex 横向排列居中，子元素间距 6px
+ * 上下外边距 16px
+ * ---------------------------------------------------------- */
+.spell-slots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 16px 0;
+}
+
+/* ----------------------------------------------------------
+ * .slot：单个空格槽
+ * 40×48px，底部 3px 粉色下划线
+ * 28px 粗体字，flex 居中
+ * text-transform: lowercase 统一小写显示
+ * ---------------------------------------------------------- */
+.slot {
+  width: 40px;
+  height: 48px;
+  border-bottom: 3px solid #ff9a9e;
+  font-size: 28px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: lowercase;
+}
+
+/* ----------------------------------------------------------
+ * .slot.right：拼对时的空格槽
+ * 浅绿背景 + 圆角
+ * ---------------------------------------------------------- */
+.slot.right {
+  background: #c8e6c9;
+  border-radius: 8px;
+}
+
+/* ----------------------------------------------------------
+ * .slot.wrong：拼错时的空格槽
+ * 浅红背景 + 圆角
+ * ---------------------------------------------------------- */
+.slot.wrong {
+  background: #ffcdd2;
+  border-radius: 8px;
+}
+
+/* ----------------------------------------------------------
+ * .spell-letters：字母按钮容器
+ * flex 横向换行排列居中，子元素间距 8px
+ * ---------------------------------------------------------- */
+.spell-letters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ----------------------------------------------------------
+ * .letter-btn：字母按钮
+ * 48×48px，圆角 12px，白底蓝边
+ * 22px 粗体字，cursor 手型
+ * text-transform: lowercase 小写显示
+ * :disabled 禁用时 0.4 透明度
+ * ---------------------------------------------------------- */
+.letter-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #fff;
+  border: 2px solid #a1c4fd;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: lowercase;
+}
+.letter-btn:disabled { opacity: 0.4; }
+
+/* ----------------------------------------------------------
+ * .sentence-box：句子排序游戏容器
+ * 文字居中
+ * ---------------------------------------------------------- */
+.sentence-box { text-align: center; }
+
+/* ----------------------------------------------------------
+ * .sentence-answer：答案区（已排列的单词）
+ * 最小高度 56px，白底圆角 12px，内边距 8px
+ * flex 横向换行居中，子元素间距 6px
+ * 上下外边距 12px
+ * .right 正确时浅绿背景，.wrong 错误时浅红背景
+ * ---------------------------------------------------------- */
+.sentence-answer {
+  min-height: 56px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px;
+  margin: 12px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+.sentence-answer.right { background: #c8e6c9; }
+.sentence-answer.wrong { background: #ffcdd2; }
+
+/* ----------------------------------------------------------
+ * .sentence-pool：待选单词池
+ * flex 横向换行居中，子元素间距 8px
+ * ---------------------------------------------------------- */
+.sentence-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* ----------------------------------------------------------
+ * .word-chip：单词卡片（句子排序用）
+ * 内边距 8px 14px，白底圆角 16px，2px 蓝边
+ * 16px 字号，cursor 手型
+ * .used 已使用时 0.3 透明度
+ * .placed 已放入答案区时蓝底白字
+ * ---------------------------------------------------------- */
+.word-chip {
+  padding: 8px 14px;
+  background: #fff;
+  border-radius: 16px;
+  border: 2px solid #a1c4fd;
+  font-size: 16px;
+  cursor: pointer;
+}
+.word-chip.used { opacity: 0.3; }
+.word-chip.placed {
+  background: #a1c4fd;
+  color: #fff;
+}
+
+/* ----------------------------------------------------------
+ * .stars：结算页星星
+ * 48px 大字号，文字居中，上下外边距 20px
+ * ---------------------------------------------------------- */
+.stars {
+  font-size: 48px;
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* ----------------------------------------------------------
+ * .result-score：结算得分文字
+ * 文字居中，24px 粗体
+ * ---------------------------------------------------------- */
+.result-score {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* ----------------------------------------------------------
+ * .result-acc：结算正确率文字
+ * 文字居中，灰色，上下外边距 8px 20px
+ * ---------------------------------------------------------- */
+.result-acc {
+  text-align: center;
+  color: #666;
+  margin: 8px 0 20px;
+}
+
+/* ----------------------------------------------------------
+ * #wrongReviewBox：错题本复习入口
+ * 文字居中，浅橙背景，内边距 12px，圆角 12px
+ * 上下外边距 12px，cursor 手型
+ * ---------------------------------------------------------- */
+#wrongReviewBox {
+  text-align: center;
+  background: #fff3e0;
+  padding: 12px;
+  border-radius: 12px;
+  margin: 12px 0;
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------
+ * .foot-note：页脚文字
+ * 绝对定位在底部，居中，11px 灰色小字
+ * ---------------------------------------------------------- */
+.foot-note {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 11px;
+  color: #999;
+}

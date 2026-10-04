@@ -65,9 +65,9 @@ const THEMES = [
       { en: "kiwi",   zh: "猕猴桃", emoji: "🥝" },
       { en: "tomato", zh: "西红柿", emoji: "🍅" },
       { en: "blueberry", zh: "蓝莓", emoji: "🫐" },
-      { en: "plum",   zh: "李子", emoji: "🍑" },
-      { en: "apricot", zh: "杏",  emoji: "🍑" },
-      { en: "fig",    zh: "无花果", emoji: "🍇" },
+      { en: "avocado", zh: "牛油果", emoji: "🥑" },
+      { en: "peanut", zh: "花生", emoji: "🥜" },
+      { en: "chestnut", zh: "栗子", emoji: "🌰" },
       { en: "melon",  zh: "甜瓜", emoji: "🍈" }
     ]
   },
@@ -76,26 +76,26 @@ const THEMES = [
     name: "颜色",
     icon: "🎨",
     words: [
-      { en: "red",    zh: "红色", emoji: "🔴" },
-      { en: "blue",   zh: "蓝色", emoji: "🔵" },
-      { en: "yellow", zh: "黄色", emoji: "🟡" },
-      { en: "green",  zh: "绿色", emoji: "🟢" },
-      { en: "purple", zh: "紫色", emoji: "🟣" },
-      { en: "orange", zh: "橙色", emoji: "🟠" },
-      { en: "pink",   zh: "粉色", emoji: "🌸" },
-      { en: "black",  zh: "黑色", emoji: "⚫" },
-      { en: "white",  zh: "白色", emoji: "⚪" },
-      { en: "brown",  zh: "棕色", emoji: "🟤" },
-      { en: "gold",   zh: "金色", emoji: "🟡" },
-      { en: "silver", zh: "银色", emoji: "⚪" },
-      { en: "gray",   zh: "灰色", emoji: "🌫️" },
-      { en: "cream",  zh: "米色", emoji: "🍦" },
-      { en: "olive",  zh: "橄榄绿", emoji: "🫒" },
-      { en: "navy",   zh: "藏青色", emoji: "🔵" },
-      { en: "teal",   zh: "青绿色", emoji: "🟢" },
-      { en: "coral",  zh: "珊瑚色", emoji: "🟠" },
-      { en: "maroon", zh: "栗色", emoji: "🔴" },
-      { en: "indigo", zh: "靛蓝色", emoji: "🟣" }
+      { en: "red",    zh: "红色", emoji: "🔴", color: "#e53935" },
+      { en: "blue",   zh: "蓝色", emoji: "🔵", color: "#1e88e5" },
+      { en: "yellow", zh: "黄色", emoji: "🟡", color: "#fdd835" },
+      { en: "green",  zh: "绿色", emoji: "🟢", color: "#43a047" },
+      { en: "purple", zh: "紫色", emoji: "🟣", color: "#8e24aa" },
+      { en: "orange", zh: "橙色", emoji: "🟠", color: "#fb8c00" },
+      { en: "pink",   zh: "粉色", emoji: "🌸", color: "#f48fb1" },
+      { en: "black",  zh: "黑色", emoji: "⚫", color: "#212121" },
+      { en: "white",  zh: "白色", emoji: "⚪", color: "#fafafa" },
+      { en: "brown",  zh: "棕色", emoji: "🟤", color: "#6d4c41" },
+      { en: "gold",   zh: "金色", emoji: "🏆", color: "#ffd700" },
+      { en: "silver", zh: "银色", emoji: "🥈", color: "#c0c0c0" },
+      { en: "gray",   zh: "灰色", emoji: "🐘", color: "#9e9e9e" },
+      { en: "cream",  zh: "米色", emoji: "🥛", color: "#fffdd0" },
+      { en: "olive",  zh: "橄榄绿", emoji: "🫒", color: "#808000" },
+      { en: "navy",   zh: "藏青色", emoji: "🌊", color: "#000080" },
+      { en: "teal",   zh: "青绿色", emoji: "🦚", color: "#008080" },
+      { en: "coral",  zh: "珊瑚色", emoji: "🪸", color: "#ff7f50" },
+      { en: "maroon", zh: "栗色", emoji: "🍫", color: "#800000" },
+      { en: "indigo", zh: "靛蓝色", emoji: "🧿", color: "#4b0082" }
     ]
   },
   {
@@ -153,6 +153,29 @@ const THEMES = [
     ]
   }
 ];
+
+/* ------------------------------------------------------------
+ * renderWordImage(word, size)
+ * 作用：渲染单词的图片素材。
+ *   - 如果单词有 color 字段（颜色主题），渲染成纯颜色块 + 中文名称
+ *   - 否则渲染成 emoji 图标
+ * 参数：
+ *   word —— 单词对象 { en, zh, emoji, color? }
+ *   size —— 图标大小（可选，默认 "large"），影响颜色块文字大小
+ * 返回：HTML 字符串
+ * 使用场景：
+ *   - 听音找图的图片选项
+ *   - 词图配对的图片列
+ *   - 拼单词的大图标提示
+ * ------------------------------------------------------------ */
+function renderWordImage(word, size) {
+  if (word.color) {
+    // 颜色主题：渲染纯颜色块（不显示文字）
+    return `<div class="color-block" style="background:${word.color}"></div>`;
+  }
+  // 其他主题：渲染 emoji
+  return `<span class="emoji">${word.emoji}</span>`;
+}
 
 /* ------------------------------------------------------------
  * getThemesByLevel()

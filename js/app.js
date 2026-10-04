@@ -187,10 +187,14 @@ const App = {
     for (let i = 0; i < 3; i++) starStr += i < stars ? "⭐" : "☆";
 
     this.showScreen("screenResult");
+    // 读取当前主题当前玩法的历史最高分
+    const data = Store.load();
+    const bestKey = theme.id + "_" + this.taskType;
+    const best = (data.bestScore && data.bestScore[bestKey]) || 0;
     document.getElementById("resultText").innerHTML = `
       <div class="stars">${starStr}</div>
       <p class="result-score">${correct} / ${total} 正确</p>
-      <p class="result-acc">正确率 ${acc}% · 历史正确率 ${Store.getAccuracy()}%</p>
+      <p class="result-acc">正确率 ${acc}% · 历史最高 ${best} 分</p>
     `;
 
     // 错题复习入口：如果错题本非空，显示复习按钮

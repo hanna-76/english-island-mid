@@ -185,7 +185,7 @@ const GameMatch = {
       this.matchedInRound++;
       this.pickedImg.btn.classList.add("matched");
       this.pickedWord.btn.classList.add("matched");
-      AudioManager.speak(this.pickedImg.word.en + " !");
+      AudioManager.speak(this.pickedImg.word.en);
       // 禁用已配对的卡片
       this.pickedImg.btn.disabled = true;
       this.pickedWord.btn.disabled = true;

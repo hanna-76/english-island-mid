@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
  * game-listening.js —— 听音找图游戏模块
  *
  * 适用年龄：3~5 岁（也可作为 6~8 岁的基础玩法）
@@ -89,7 +89,7 @@ const GameListening = {
     const stage = document.getElementById("stage");
     stage.innerHTML = `
       <div class="q-hint">
-        <p class="q-cn">${q.zh}</p>
+        <p class="q-cn">${q.en}</p>
         <button class="btn-replay" id="btnReplay" aria-label="重播发音">
           🔊 再听一次
         </button>
